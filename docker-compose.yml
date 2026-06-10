@@ -1,0 +1,25 @@
+# Orchestration locale API + front.
+# `make run` (ou `docker compose up --build`) construit et démarre les deux.
+#
+# Note : le service `api` suppose un `api/Dockerfile` (à fournir par les
+# participants). Le front fonctionne indépendamment.
+
+services:
+  api:
+    build:
+      context: ./api
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+
+  front:
+    build:
+      context: ./front
+      args:
+        # En conteneur, le navigateur appelle l'API via le port publié de l'hôte.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
