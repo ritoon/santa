@@ -59,3 +59,10 @@ func (c *Control) Login(payload *model.LoginPayload) (tokenString string, err er
 	}
 	return tokenString, nil
 }
+
+// TODO ajouter une méthode permettant de réaliser un middleware
+// https://gin-gonic.com/en/docs/middleware/custom-middleware/
+// vérifier dans le header "Authorization" la valeur Bearer JWT
+// valider le JWT et récupérer les valeurs de Claims et l'ajouter dans le Context de gin.
+// https://pkg.go.dev/github.com/golang-jwt/jwt/v5#example-Parse-Hmac
+// sinon arrêter l'execution des handlers et renvoyer un 401 à l'appel
