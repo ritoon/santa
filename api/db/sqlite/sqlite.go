@@ -2,6 +2,9 @@ package sqlite
 
 import (
 	"apisanta/model"
+	"encoding/json"
+	"log"
+	"os"
 
 	"github.com/libtnb/sqlite"
 	"gorm.io/gorm"
@@ -22,12 +25,36 @@ func New() (*SQLiteDB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	err = db.AutoMigrate(&model.User{})
 	if err != nil {
 		return nil, err
 	}
 
-	return &SQLiteDB{db: db}, nil
+	dbconn := &SQLiteDB{db: db}
+	ps, _ := dbconn.GetProducts()
+	if len(ps) == 0 {
+		insertSampleData(db)
+	}
+
+	return dbconn, nil
+}
+
+func insertSampleData(db *gorm.DB) {
+	data, err := os.ReadFile("../front/public/products.json")
+	if err != nil {
+		log.Printf("failed to read products data: %v", err)
+		return
+	}
+	var products []model.Product
+	err = json.Unmarshal(data, &products)
+	if err != nil {
+		log.Printf("failed to parse products data: %v", err)
+		return
+	}
+	for _, product := range products {
+		db.Create(&product)
+	}
 }
 
 func (s *SQLiteDB) GetProducts() ([]model.Product, error) {
