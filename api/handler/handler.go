@@ -1,39 +1,35 @@
 package handler
 
 import (
+	"apisanta/control"
 	"apisanta/middleware"
-	"apisanta/model"
-	"encoding/json"
-	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Handers struct{}
+type Handers struct {
+	Ctrl *control.Control
+}
 
-func Init(router *gin.Engine) {
+func Init(router *gin.Engine, ctrl *control.Control) {
 	logger := middleware.Logger()
 	v1 := router.Group("/api/v1").Use(logger)
 
-	var h = &Handers{}
+	var h = &Handers{
+		Ctrl: ctrl,
+	}
 
 	v1.GET("/products", h.HandlerGetProducts)
 }
 
 // HandlerGetProducts
 func (h *Handers) HandlerGetProducts(c *gin.Context) {
-	data, err := os.ReadFile("../front/public/products.json")
+
+	data, err := h.Ctrl.GetProducts()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to read products data"})
-		return
-	}
-	var products []model.Product
-	err = json.Unmarshal(data, &products)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to parse products data"})
+		c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.Data(200, "application/json", data)
+	c.JSON(200, data)
 }
