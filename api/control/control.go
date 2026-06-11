@@ -2,8 +2,11 @@ package control
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
 	"apisanta/db"
@@ -51,6 +54,7 @@ func (c *Control) Login(payload *model.LoginPayload) (tokenString string, err er
 		"id":    usr.ID,
 		"email": usr.Email,
 		"nbf":   time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+		"exp":   time.Now().Add(time.Hour * -1).Unix(),
 	})
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err = token.SignedString(c.jwtSignKey)
@@ -66,3 +70,32 @@ func (c *Control) Login(payload *model.LoginPayload) (tokenString string, err er
 // valider le JWT et récupérer les valeurs de Claims et l'ajouter dans le Context de gin.
 // https://pkg.go.dev/github.com/golang-jwt/jwt/v5#example-Parse-Hmac
 // sinon arrêter l'execution des handlers et renvoyer un 401 à l'appel
+func (c *Control) ValidateJWT() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		auth := ctx.Request.Header.Get("Authorization")
+		if len(auth) == 0 {
+			ctx.AbortWithStatusJSON(401, gin.H{"error": "Authorization header value not found"})
+			return
+		}
+		valueAuth := strings.Split(auth, " ")
+		if len(valueAuth) != 2 {
+			ctx.AbortWithStatusJSON(401, gin.H{"error": "Authorization header value not found"})
+			return
+		}
+
+		token, err := jwt.Parse(valueAuth[1], func(token *jwt.Token) (any, error) {
+			return c.jwtSignKey, nil
+		}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+		if err != nil {
+			ctx.AbortWithStatusJSON(401, gin.H{"error": err.Error()})
+			return
+		}
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			fmt.Println(claims["id"], claims["email"])
+			ctx.Set("usr_id", claims["id"])
+		} else {
+			fmt.Println(err)
+		}
+	}
+}
