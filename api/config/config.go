@@ -1,8 +1,31 @@
 package config
 
-// TODO
-// récupération des vars d'env pour initialiser l'application
-// utiliser Viper pour la gestion de la config
-// https://github.com/spf13/viper
-// création d'une structure de config
-// Création d'un fonction qui retourne la structure de config avec les vars d'env
+import (
+	"log"
+
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	JWTSignKey string `mapstructure:"jwt_sign_key"`
+}
+
+func Get() *Config {
+
+	viper.SetConfigFile(".env")
+	viper.SetConfigType("env")
+
+	// Permet aussi de surcharger avec les vraies variables d'environnement
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("error Read config %v", err)
+	}
+
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		log.Fatal("error unmarshal to config")
+	}
+
+	return &cfg
+}
