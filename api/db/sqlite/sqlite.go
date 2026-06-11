@@ -3,7 +3,7 @@ package sqlite
 import (
 	"apisanta/model"
 
-	"gorm.io/driver/sqlite"
+	"github.com/libtnb/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -18,8 +18,14 @@ func New() (*SQLiteDB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&model.Product{})
-	db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.Product{})
+	if err != nil {
+		return nil, err
+	}
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		return nil, err
+	}
 
 	return &SQLiteDB{db: db}, nil
 }
