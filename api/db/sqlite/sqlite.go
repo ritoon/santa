@@ -34,13 +34,14 @@ func New() (*SQLiteDB, error) {
 	dbconn := &SQLiteDB{db: db}
 	ps, _ := dbconn.GetProducts()
 	if len(ps) == 0 {
-		insertSampleData(db)
+		insertSampleData(dbconn)
 	}
 
 	return dbconn, nil
 }
 
-func insertSampleData(db *gorm.DB) {
+func insertSampleData(db *SQLiteDB) {
+	// insert sample products from JSON file
 	data, err := os.ReadFile("../front/public/products.json")
 	if err != nil {
 		log.Printf("failed to read products data: %v", err)
@@ -53,28 +54,14 @@ func insertSampleData(db *gorm.DB) {
 		return
 	}
 	for _, product := range products {
-		db.Create(&product)
+		db.CreateProduct(&product)
 	}
-}
-
-func (s *SQLiteDB) GetProducts() ([]model.Product, error) {
-	var products []model.Product
-	err := s.db.Find(&products).Error
-	return products, err
-}
-
-func (s *SQLiteDB) GetUsers() ([]model.User, error) {
-	var users []model.User
-	err := s.db.Find(&users).Error
-	return users, err
-}
-
-func (s *SQLiteDB) Login(username, password string) (model.User, error) {
-	var user model.User
-	err := s.db.Where("username = ? AND password = ?", username, password).First(&user).Error
-	return user, err
-}
-
-func (s *SQLiteDB) Register(user model.User) error {
-	return s.db.Create(&user).Error
+	// insert sample users
+	users := []model.User{
+		{Username: "user1", Email: "user1@example.com", Password: "password1", Age: 10},
+		{Username: "user2", Email: "user2@example.com", Password: "password2", Age: 5},
+	}
+	for _, user := range users {
+		db.CreateUser(&user)
+	}
 }
