@@ -10,12 +10,13 @@ import (
 	"apisanta/model"
 )
 
-func New(d db.DB) *Control {
-	return &Control{db: d}
+func New(d db.DB, jwtSignKey string) *Control {
+	return &Control{db: d, jwtSignKey: []byte(jwtSignKey)}
 }
 
 type Control struct {
-	db db.DB
+	db         db.DB
+	jwtSignKey []byte
 }
 
 func (c *Control) Register(u *model.User) error {
@@ -52,7 +53,7 @@ func (c *Control) Login(payload *model.LoginPayload) (tokenString string, err er
 		"nbf":   time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
 	})
 	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err = token.SignedString([]byte("hmacSampleSecret"))
+	tokenString, err = token.SignedString(c.jwtSignKey)
 	if err != nil {
 		return "", err
 	}

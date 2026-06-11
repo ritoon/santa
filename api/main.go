@@ -11,7 +11,7 @@ import (
 func main() {
 
 	db, _ := sqlite.New()
-	control := control.New(db)
+	control := control.New(db, "signkey123")
 
 	router := gin.Default()
 	handler.Init(router, control)
