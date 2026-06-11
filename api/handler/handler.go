@@ -20,6 +20,7 @@ func Init(router *gin.Engine, ctrl *control.Control) {
 	}
 
 	v1.GET("/products", h.HandlerGetProducts)
+	// TODO: créer un nouvel endpoint pour le login et créer un HandlerLogin
 }
 
 // HandlerGetProducts

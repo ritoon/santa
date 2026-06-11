@@ -39,3 +39,12 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.Password = fmt.Sprintf("%x", h.Sum(nil))
 	return
 }
+
+// TODO
+// création d'une structure LoginPayload
+// Email
+// Password
+
+// Ajouter la méthode IsValidPassword
+// param in pwd string
+// param ou bool

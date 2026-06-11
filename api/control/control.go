@@ -22,3 +22,13 @@ func (c *Control) Register(u *model.User) error {
 func (c *Control) GetProducts() ([]model.Product, error) {
 	return c.db.GetProducts()
 }
+
+// TODO:
+// Création d'une fonction Login
+// param in payload de login
+// getUserByEmail
+// valider si le password est ok
+// créer un token de cession JWT
+// utiliser cette package https://github.com/golang-jwt/jwt
+// doc https://pkg.go.dev/github.com/golang-jwt/jwt/v5#example-NewWithClaims-Hmac
+// et le renvoyer
