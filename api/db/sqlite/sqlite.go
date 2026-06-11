@@ -17,6 +17,10 @@ func New() (*SQLiteDB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	db.AutoMigrate(&model.Product{})
+	db.AutoMigrate(&model.User{})
+
 	return &SQLiteDB{db: db}, nil
 }
 
