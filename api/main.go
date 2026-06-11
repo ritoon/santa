@@ -9,8 +9,11 @@ import (
 )
 
 func main() {
+	// TODO récupération de la configuration
 
 	db, _ := sqlite.New()
+
+	// TODO remplacer par la var d'env pour la signature de la clée
 	control := control.New(db, "signkey123")
 
 	router := gin.Default()
