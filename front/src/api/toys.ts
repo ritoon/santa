@@ -1,9 +1,8 @@
+import { apiFetch } from "./client";
 import type { Toy } from "./types";
 
-// ⚠️ Stand-in temporaire : l'API Go n'existe pas encore, donc on lit le
-// catalogue depuis le fichier statique `front/public/products.json` (servi par
-// Vite à la racine). Dès que l'API sera prête, remplace le corps de `listToys`
-// et `getToy` par les appels commentés en bas de fichier.
+// Le catalogue est servi par l'API Go sur `GET /products`. Chaque produit suit
+// la structure `RawProduct` (champs en français) qu'on mappe vers `Toy`.
 
 interface RawProduct {
   titre: string;
@@ -42,11 +41,7 @@ function toToy(raw: RawProduct): Toy {
 }
 
 async function fetchProducts(): Promise<Toy[]> {
-  const res = await fetch(`${import.meta.env.BASE_URL}products.json`);
-  if (!res.ok) {
-    throw new Error("Impossible de charger le catalogue local");
-  }
-  const raw = (await res.json()) as RawProduct[];
+  const raw = await apiFetch<RawProduct[]>("/products");
   return raw.map(toToy);
 }
 
@@ -62,15 +57,3 @@ export async function getToy(id: string): Promise<Toy> {
   }
   return toy;
 }
-
-// --- Version API (à réactiver quand le dossier `api/` sera disponible) -------
-//
-// import { apiFetch } from "./client";
-//
-// export function listToys(): Promise<Toy[]> {
-//   return apiFetch<Toy[]>("/api/toys");
-// }
-//
-// export function getToy(id: string): Promise<Toy> {
-//   return apiFetch<Toy>(`/api/toys/${id}`);
-// }

@@ -19,7 +19,20 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 // User
 { "id": "string", "email": "string", "childName": "string", "age": 8 }
 
-// Toy
+// Product — structure brute renvoyée par `GET /products`
+{
+  "titre": "string",
+  "prix": "120,00 €",        // chaîne, virgule décimale + symbole €
+  "description": "string",
+  "images": ["string"],      // URLs, la première est utilisée comme vignette
+  "reference": "string",     // identifiant produit
+  "categorie": "string",
+  "sous_categorie": "string",
+  "url": "string"
+}
+
+// Toy — modèle consommé par le front, dérivé de Product côté client
+// (reference→id, titre→name, prix parsé en nombre, images[0]→imageUrl)
 {
   "id": "string",
   "name": "string",
@@ -50,10 +63,14 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 
 ### Catalogue de jouets (public)
 
-| Méthode | Chemin           | Réponse     |
-| ------- | ---------------- | ----------- |
-| GET     | `/api/toys`      | `Toy[]`     |
-| GET     | `/api/toys/:id`  | `Toy`       |
+| Méthode | Chemin        | Réponse     |
+| ------- | ------------- | ----------- |
+| GET     | `/products`   | `Product[]` |
+
+> Le front récupère le catalogue via `GET /products` et mappe chaque `Product`
+> vers un `Toy` (voir `src/api/toys.ts`). Le détail d'un jouet (`getToy`) est
+> résolu côté client à partir de cette liste — il n'y a pas d'endpoint
+> `/products/:id`.
 
 ### Liste de souhaits (authentifié — `Authorization: Bearer`)
 
