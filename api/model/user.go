@@ -40,11 +40,16 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// TODO
-// création d'une structure LoginPayload
-// Email
-// Password
+type LoginPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
-// Ajouter la méthode IsValidPassword
-// param in pwd string
-// param ou bool
+func (payload *LoginPayload) IsValidPassword(pwd string) bool {
+	h := sha256.New()
+	h.Write([]byte(payload.Password))
+	if pwd != fmt.Sprintf("%x", h.Sum(nil)) {
+		return false
+	}
+	return true
+}
