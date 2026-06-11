@@ -1,17 +1,17 @@
 package control
 
 import (
+	"apisanta/db"
 	"apisanta/model"
-	"encoding/json"
-	"fmt"
-	"os"
 )
 
-func New() *Control {
-	return &Control{}
+func New(d db.DB) *Control {
+	return &Control{db: d}
 }
 
-type Control struct{}
+type Control struct {
+	db db.DB
+}
 
 func (c *Control) Register(u *model.User) error {
 	// save user to database
@@ -20,14 +20,17 @@ func (c *Control) Register(u *model.User) error {
 }
 
 func (c *Control) GetProducts() ([]model.Product, error) {
-	data, err := os.ReadFile("../../front/public/products.json")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read products data: %w", err)
-	}
-	var products []model.Product
-	err = json.Unmarshal(data, &products)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse products data: %w", err)
-	}
-	return products, nil
+
+	return c.db.GetProducts()
+
+	// data, err := os.ReadFile("../../front/public/products.json")
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to read products data: %w", err)
+	// }
+	// var products []model.Product
+	// err = json.Unmarshal(data, &products)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to parse products data: %w", err)
+	// }
+	// return products, nil
 }
