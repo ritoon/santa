@@ -1,6 +1,7 @@
 package sqlite
 
 import (
+	"apisanta/db"
 	"apisanta/model"
 	"encoding/json"
 	"log"
@@ -9,6 +10,8 @@ import (
 	"github.com/libtnb/sqlite"
 	"gorm.io/gorm"
 )
+
+var _ db.DB = (*SQLiteDB)(nil)
 
 type SQLiteDB struct {
 	// Add fields for your SQLite connection, e.g.:
