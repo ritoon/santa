@@ -6,6 +6,7 @@ import (
 	"apisanta/model"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,9 +25,10 @@ func Init(router *gin.Engine, ctrl *control.Control) {
 
 	// TODO ajouter la validation dans le header du JWT (middleware)
 	v1.GET("/products", h.Ctrl.ValidateJWT(), h.HandlerGetProducts)
-	// v1.GET("/products", h.HandlerGetProducts)
+	v1.GET("/products/:id", h.HandlerGetProduct)
 	v1.POST("/login", h.HandlerLogin)
 	// TODO création du nouvel endpoint create user avec POST
+	v1.POST("/register", h.HandlerRegister)
 }
 
 // Todo création d'un handler pour le register (création d'un utilisateur)
@@ -63,4 +65,50 @@ func (h *Handers) HandlerLogin(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"jwt": jwtString})
+}
+
+func (h *Handers) HandlerGetProduct(c *gin.Context) {
+	id := c.Param("id")
+	if len(id) == 0 {
+		c.Abort()
+		return
+	}
+	idint, err := strconv.Atoi(id)
+	if err != nil {
+		c.Abort()
+		return
+	}
+
+	data, err := h.Ctrl.GetProduct(uint(idint))
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, data)
+}
+
+func (h *Handers) HandlerRegister(c *gin.Context) {
+	var payload model.PayloadCreateUser
+	err := c.BindJSON(&payload)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = payload.Valid()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	u := payload.ToUser()
+
+	err = h.Ctrl.Register(u)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, u)
 }

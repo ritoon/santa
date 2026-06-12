@@ -2,6 +2,7 @@ package model
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -16,6 +17,21 @@ type User struct {
 	Password string `json:"password"`
 }
 
+func (u User) MarshalJSON() ([]byte, error) {
+	aux := struct {
+		ID       uint
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		Age      int    `json:"age"`
+	}{
+		ID:       u.ID,
+		Username: u.Username,
+		Email:    u.Email,
+		Age:      u.Age,
+	}
+	return json.Marshal(aux)
+}
+
 type PayloadCreateUser struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -25,7 +41,12 @@ type PayloadCreateUser struct {
 
 func (pcu *PayloadCreateUser) ToUser() *User {
 	// à implémenter
-	return nil
+	return &User{
+		Username: pcu.Username,
+		Email:    pcu.Email,
+		Age:      pcu.Age,
+		Password: pcu.Password,
+	}
 }
 
 func (pcu *PayloadCreateUser) Valid() error {

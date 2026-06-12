@@ -28,9 +28,7 @@ type Control struct {
 }
 
 func (c *Control) Register(u *model.User) error {
-	// save user to database
-	// send confirmation email
-	return nil
+	return c.db.CreateUser(u)
 }
 
 func (c *Control) GetProducts() ([]model.Product, error) {
@@ -53,6 +51,14 @@ func (c *Control) GetProducts() ([]model.Product, error) {
 	c.cache.Set("products", ps)
 	// et stocker dans le cache
 	return ps, nil
+}
+
+func (c *Control) GetProduct(id uint) (*model.Product, error) {
+	p, err := c.db.GetProductByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
 // TODO:

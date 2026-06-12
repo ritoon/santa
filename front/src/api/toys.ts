@@ -5,6 +5,7 @@ import type { Toy } from "./types";
 // suit la structure `RawProduct` (champs en français) qu'on mappe vers `Toy`.
 
 interface RawProduct {
+  ID: number; // identifiant en base (clé JSON `ID`), utilisé dans l'URL de détail
   titre: string;
   prix: string; // ex : "120,00 €"
   description: string;
@@ -31,7 +32,7 @@ function parsePrice(raw: string): number | undefined {
 /** Mappe un produit brut du JSON vers le modèle `Toy` consommé par le front. */
 function toToy(raw: RawProduct): Toy {
   return {
-    id: raw.reference,
+    id: String(raw.ID),
     name: raw.titre,
     description: raw.description,
     imageUrl: raw.images[0] ?? PLACEHOLDER_IMAGE,
@@ -51,10 +52,9 @@ export async function listToys(): Promise<Toy[]> {
 }
 
 export async function getToy(id: string): Promise<Toy> {
-  const toys = await fetchProducts();
-  const toy = toys.find((t) => t.id === id);
-  if (!toy) {
-    throw new Error("Jouet introuvable");
-  }
-  return toy;
+  // Détail d'un produit via son `id` : `GET /api/v1/products/:id`.
+  const raw = await apiFetch<RawProduct>(`/api/v1/products/${id}`, {
+    auth: true,
+  });
+  return toToy(raw);
 }

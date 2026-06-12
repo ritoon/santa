@@ -6,7 +6,7 @@ export function getWishlist(): Promise<Wishlist> {
 }
 
 export function addToWishlist(toyId: string): Promise<Wishlist> {
-  return apiFetch<Wishlist>("/api/wishlist/items", {
+  return apiFetch<Wishlist>("/api/wishlist", {
     method: "POST",
     body: { toyId },
     auth: true,
@@ -14,7 +14,7 @@ export function addToWishlist(toyId: string): Promise<Wishlist> {
 }
 
 export function removeFromWishlist(itemId: string): Promise<void> {
-  return apiFetch<void>(`/api/wishlist/items/${itemId}`, {
+  return apiFetch<void>(`/api/wishlist/${itemId}`, {
     method: "DELETE",
     auth: true,
   });
@@ -26,9 +26,7 @@ export interface SendWishlistPayload {
   message?: string;
 }
 
-export function sendWishlistToParent(
-  payload: SendWishlistPayload,
-): Promise<Wishlist> {
+export function sendWishlistToParent(payload: SendWishlistPayload): Promise<Wishlist> {
   return apiFetch<Wishlist>("/api/wishlist/send", {
     method: "POST",
     body: payload,
