@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"apisanta/cache/localcache"
@@ -27,7 +28,11 @@ func main() {
 	// authoriser  Local:   http://localhost:5173/
 	//   ➜  Network: http://192.168.29.17:5173/
 	// https://github.com/gin-contrib/cors
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:5173", "http://192.168.29.17:5173"}
+	config.AllowHeaders = []string{"Origin", "Authorization"}
 	router := gin.Default()
+	router.Use(cors.New(config))
 	handler.Init(router, control)
 
 	router.Run(":8080")

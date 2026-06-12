@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { AuthResponse } from "./types";
+import type { AuthResponse, LoginResponse } from "./types";
 
 export interface RegisterPayload {
   email: string;
@@ -20,8 +20,8 @@ export function register(payload: RegisterPayload): Promise<AuthResponse> {
   });
 }
 
-export function login(payload: LoginPayload): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/api/login", {
+export function login(payload: LoginPayload): Promise<LoginResponse> {
+  return apiFetch<LoginResponse>("/api/v1/login", {
     method: "POST",
     body: payload,
   });

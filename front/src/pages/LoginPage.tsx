@@ -1,14 +1,12 @@
 import { useState, type FormEvent } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 import { HttpError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const { signIn } = useAuth();
+  const { signInWithToken } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: Location })?.from?.pathname ?? "/toys";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,9 +18,10 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const auth = await login({ email, password });
-      signIn(auth);
-      navigate(from, { replace: true });
+      // `apiFetch` lève une `HttpError` si le status n'est pas 2xx.
+      const { jwt } = await login({ email, password });
+      signInWithToken(jwt); // stocke le JWT dans le localStorage
+      navigate("/logged-in", { replace: true });
     } catch (err) {
       setError(
         err instanceof HttpError ? err.message : "Identifiants invalides",

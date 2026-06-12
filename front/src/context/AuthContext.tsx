@@ -12,6 +12,7 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   signIn: (auth: AuthResponse) => void;
+  signInWithToken: (jwt: string) => void;
   signOut: () => void;
 }
 
@@ -21,6 +22,7 @@ const USER_KEY = "santa_user";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setTokenState] = useState<string | null>(() => getToken());
 
   useEffect(() => {
     const stored = localStorage.getItem(USER_KEY);
@@ -31,19 +33,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function signIn(auth: AuthResponse) {
     setToken(auth.token);
+    setTokenState(auth.token);
     localStorage.setItem(USER_KEY, JSON.stringify(auth.user));
     setUser(auth.user);
   }
 
+  // Connexion via `POST /login` : on ne reçoit qu'un JWT, pas de profil.
+  function signInWithToken(jwt: string) {
+    setToken(jwt);
+    setTokenState(jwt);
+  }
+
   function signOut() {
     clearToken();
+    setTokenState(null);
     localStorage.removeItem(USER_KEY);
     setUser(null);
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: user !== null, signIn, signOut }}
+      value={{
+        user,
+        isAuthenticated: token !== null,
+        signIn,
+        signInWithToken,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

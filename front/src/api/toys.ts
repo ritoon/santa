@@ -41,7 +41,8 @@ function toToy(raw: RawProduct): Toy {
 }
 
 async function fetchProducts(): Promise<Toy[]> {
-  const raw = await apiFetch<RawProduct[]>("/api/v1/products");
+  // `auth: true` injecte le JWT du localStorage en `Authorization: Bearer <jwt>`.
+  const raw = await apiFetch<RawProduct[]>("/api/v1/products", { auth: true });
   return raw.map(toToy);
 }
 

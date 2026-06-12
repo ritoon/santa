@@ -12,6 +12,11 @@ export interface AuthResponse {
   user: User;
 }
 
+// Réponse de `POST /login` : l'API ne renvoie que le JWT de session.
+export interface LoginResponse {
+  jwt: string;
+}
+
 export interface Toy {
   id: string;
   name: string;

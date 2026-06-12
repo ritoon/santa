@@ -77,7 +77,7 @@ func (c *Control) Login(payload *model.LoginPayload) (tokenString string, err er
 		"id":    usr.ID,
 		"email": usr.Email,
 		"nbf":   time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-		"exp":   time.Now().Add(time.Hour * -1).Unix(),
+		"exp":   time.Now().Add(time.Hour).Unix(),
 	})
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err = token.SignedString(c.jwtSignKey)

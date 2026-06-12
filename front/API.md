@@ -48,8 +48,11 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 // Wishlist
 { "id": "string", "items": [ /* WishlistItem */ ], "sentToParent": false }
 
-// AuthResponse
+// AuthResponse (utilisé par /api/register)
 { "token": "jwt", "user": { /* User */ } }
+
+// LoginResponse (utilisé par /api/v1/login) — uniquement le JWT de session
+{ "jwt": "string" }
 ```
 
 ## Endpoints
@@ -58,10 +61,10 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 
 | Méthode | Chemin           | Corps                                                  | Réponse        |
 | ------- | ---------------- | ------------------------------------------------------ | -------------- |
-| POST    | `/api/register`  | `{ email, password, childName, age? }`                 | `AuthResponse` |
-| POST    | `/api/login`     | `{ email, password }`                                  | `AuthResponse` |
+| POST    | `/api/register`  | `{ email, password, childName, age? }`                 | `AuthResponse`  |
+| POST    | `/api/v1/login`  | `{ email, password }`                                  | `LoginResponse` |
 
-### Catalogue de jouets (public)
+### Catalogue de jouets (authentifié — `Authorization: Bearer`)
 
 | Méthode | Chemin              | Réponse     |
 | ------- | ------------------- | ----------- |
