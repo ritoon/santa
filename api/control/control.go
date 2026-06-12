@@ -29,6 +29,8 @@ func (c *Control) Register(u *model.User) error {
 }
 
 func (c *Control) GetProducts() ([]model.Product, error) {
+	// chercher si le cache existe renvoyer le résultat en []model.Product
+	// sinon récupérer dans la base de données
 	return c.db.GetProducts()
 }
 
