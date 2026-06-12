@@ -19,7 +19,7 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 // User
 { "id": "string", "email": "string", "childName": "string", "age": 8 }
 
-// Product — structure brute renvoyée par `GET /products`
+// Product — structure brute renvoyée par `GET /api/v1/products`
 {
   "titre": "string",
   "prix": "120,00 €",        // chaîne, virgule décimale + symbole €
@@ -63,14 +63,14 @@ pas, le front compile et s'affiche, mais les appels réseau échoueront.
 
 ### Catalogue de jouets (public)
 
-| Méthode | Chemin        | Réponse     |
-| ------- | ------------- | ----------- |
-| GET     | `/products`   | `Product[]` |
+| Méthode | Chemin              | Réponse     |
+| ------- | ------------------- | ----------- |
+| GET     | `/api/v1/products`  | `Product[]` |
 
-> Le front récupère le catalogue via `GET /products` et mappe chaque `Product`
-> vers un `Toy` (voir `src/api/toys.ts`). Le détail d'un jouet (`getToy`) est
-> résolu côté client à partir de cette liste — il n'y a pas d'endpoint
-> `/products/:id`.
+> Le front récupère le catalogue via `GET /api/v1/products` et mappe chaque
+> `Product` vers un `Toy` (voir `src/api/toys.ts`). Le détail d'un jouet
+> (`getToy`) est résolu côté client à partir de cette liste — il n'y a pas
+> d'endpoint `/api/v1/products/:id`.
 
 ### Liste de souhaits (authentifié — `Authorization: Bearer`)
 

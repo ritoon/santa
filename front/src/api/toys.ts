@@ -1,8 +1,8 @@
 import { apiFetch } from "./client";
 import type { Toy } from "./types";
 
-// Le catalogue est servi par l'API Go sur `GET /products`. Chaque produit suit
-// la structure `RawProduct` (champs en français) qu'on mappe vers `Toy`.
+// Le catalogue est servi par l'API Go sur `GET /api/v1/products`. Chaque produit
+// suit la structure `RawProduct` (champs en français) qu'on mappe vers `Toy`.
 
 interface RawProduct {
   titre: string;
@@ -41,7 +41,7 @@ function toToy(raw: RawProduct): Toy {
 }
 
 async function fetchProducts(): Promise<Toy[]> {
-  const raw = await apiFetch<RawProduct[]>("/products");
+  const raw = await apiFetch<RawProduct[]>("/api/v1/products");
   return raw.map(toToy);
 }
 

@@ -23,6 +23,10 @@ func main() {
 
 	control := control.New(db, conf.JWTSignKey, c)
 
+	// ajouter une règle de cors
+	// authoriser  Local:   http://localhost:5173/
+	//   ➜  Network: http://192.168.29.17:5173/
+	// https://github.com/gin-contrib/cors
 	router := gin.Default()
 	handler.Init(router, control)
 
