@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
+	"apisanta/cache/localcache"
 	"apisanta/config"
 	"apisanta/control"
 	"apisanta/db/sqlite"
@@ -15,7 +16,10 @@ func main() {
 
 	db, _ := sqlite.New()
 
-	control := control.New(db, conf.JWTSignKey)
+	// créer une instance de cache et l'envoyer dans le constructeur du control.
+	c := localcache.New()
+
+	control := control.New(db, conf.JWTSignKey, c)
 
 	router := gin.Default()
 	handler.Init(router, control)

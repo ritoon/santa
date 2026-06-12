@@ -3,23 +3,28 @@ package control
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
+	"apisanta/cache"
 	"apisanta/db"
 	"apisanta/model"
 )
 
-func New(d db.DB, jwtSignKey string) *Control {
-	return &Control{db: d, jwtSignKey: []byte(jwtSignKey)}
+// ajouter dans le constructeur le cache.Cacher
+func New(d db.DB, jwtSignKey string, c cache.Cacher) *Control {
+	return &Control{db: d, jwtSignKey: []byte(jwtSignKey), cache: c}
 }
 
 type Control struct {
 	db         db.DB
 	jwtSignKey []byte
+	// ajouter cache de type cache.Cacher
+	cache cache.Cacher
 }
 
 func (c *Control) Register(u *model.User) error {
@@ -30,8 +35,24 @@ func (c *Control) Register(u *model.User) error {
 
 func (c *Control) GetProducts() ([]model.Product, error) {
 	// chercher si le cache existe renvoyer le résultat en []model.Product
-	// sinon récupérer dans la base de données
-	return c.db.GetProducts()
+	res, ok := c.cache.Get("products")
+	if ok {
+		log.Println("got product from cache")
+		v, ok := res.([]model.Product)
+		if !ok {
+			return nil, errors.New("internal error")
+		}
+		return v, nil
+	}
+	// sinon récupérer dans la base de données avec c.db.GetProducts()
+	ps, err := c.db.GetProducts()
+	if err != nil {
+		return nil, err
+	}
+	log.Println("set product in cache")
+	c.cache.Set("products", ps)
+	// et stocker dans le cache
+	return ps, nil
 }
 
 // TODO:

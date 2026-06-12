@@ -23,7 +23,8 @@ func Init(router *gin.Engine, ctrl *control.Control) {
 	}
 
 	// TODO ajouter la validation dans le header du JWT (middleware)
-	v1.GET("/products", h.Ctrl.ValidateJWT(), h.HandlerGetProducts)
+	// v1.GET("/products", h.Ctrl.ValidateJWT(), h.HandlerGetProducts)
+	v1.GET("/products", h.HandlerGetProducts)
 	v1.POST("/login", h.HandlerLogin)
 }
 
