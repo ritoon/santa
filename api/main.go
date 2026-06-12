@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 
 	"apisanta/cache/localcache"
@@ -17,7 +19,7 @@ func main() {
 	db, _ := sqlite.New()
 
 	// créer une instance de cache et l'envoyer dans le constructeur du control.
-	c := localcache.New()
+	c := localcache.New(time.Second * 3)
 
 	control := control.New(db, conf.JWTSignKey, c)
 
