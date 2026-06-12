@@ -2,6 +2,7 @@ package model
 
 import (
 	"crypto/sha256"
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -13,6 +14,50 @@ type User struct {
 	Email    string `json:"email"`
 	Age      int    `json:"age"`
 	Password string `json:"password"`
+}
+
+type PayloadCreateUser struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Age      int    `json:"age"`
+	Password string `json:"password"`
+}
+
+func (pcu *PayloadCreateUser) ToUser() *User {
+	// à implémenter
+	return nil
+}
+
+func (pcu *PayloadCreateUser) Valid() error {
+	var err ErrorValidation
+	if pcu.Age < 0 || pcu.Age < 200 {
+		err.Add(errors.New("age out of range"))
+	}
+	if len(pcu.Password) < 3 {
+		err.Add(errors.New("password too small need at least 3 caracters"))
+	}
+
+	if len(pcu.Email) < 3 {
+		err.Add(errors.New("email not valid"))
+	}
+
+	if len(err.errs) != 0 {
+		return nil
+	}
+	return &err
+}
+
+type ErrorValidation struct {
+	errs []error
+	Msg  string
+}
+
+func (e *ErrorValidation) Error() string {
+	return fmt.Sprintf("%v - %v", e.errs, e.Msg)
+}
+
+func (e *ErrorValidation) Add(err error) {
+	e.errs = append(e.errs, err)
 }
 
 // type Password string

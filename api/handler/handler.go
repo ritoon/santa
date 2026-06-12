@@ -26,7 +26,15 @@ func Init(router *gin.Engine, ctrl *control.Control) {
 	v1.GET("/products", h.Ctrl.ValidateJWT(), h.HandlerGetProducts)
 	// v1.GET("/products", h.HandlerGetProducts)
 	v1.POST("/login", h.HandlerLogin)
+	// TODO création du nouvel endpoint create user avec POST
 }
+
+// Todo création d'un handler pour le register (création d'un utilisateur)
+// il récupère dans le context de gin les informations qui sont à mapper sur la structure PayloadCreateUser
+// ensuite valider si le payload est conforme
+// ensuite convertir le payload en User
+// save dans la db.
+// renvoyer l'utilisateur
 
 // HandlerGetProducts
 func (h *Handers) HandlerGetProducts(c *gin.Context) {
